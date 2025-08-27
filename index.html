@@ -3,111 +3,140 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Advanced Local Toolkit — Single File (Extended)</title>
-  <meta name="description" content="Extended single-file advanced local web toolkit: file manager, image editor, audio analyzer, markdown & HTML live preview, mini-terminal, command palette, presets, more utilities." />
+  <title>Local Toolkit — Polished Edition</title>
+  <meta name="description" content="Polished single-file local toolkit: better layout, prettier UI, autosave on every change, improved buttons and fonts." />
   <style>
     :root{
-      --bg:#0f1115;--panel:#0b0d10;--muted:#9aa4b2;--accent:#6ee7b7;--glass:rgba(255,255,255,0.03);--glass-2:rgba(255,255,255,0.02);--card:#0b0f14;--danger:#ff6b6b
-      }
+      --bg:#071018; --panel:linear-gradient(180deg,#07131a,#071a20); --muted:#9aa4b2; --accent:#5ee7c6; --accent-2:#7b61ff; --glass:rgba(255,255,255,0.03); --glass-2:rgba(255,255,255,0.02); --card:#08121a; --danger:#ff6b6b; --glass-border:rgba(255,255,255,0.04);
+      --btn-height:42px; --radius:12px; --shadow: 0 6px 24px rgba(2,6,10,0.6);
+    }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color: #e6eef6;background: linear-gradient(180deg,#071018 0%, #0f1621 100%);}
-    .app{display:grid;grid-template-columns:300px 1fr 460px;grid-template-rows:64px 1fr;grid-template-areas:"sidebar header header" "sidebar main right";height:100vh;gap:14px;padding:14px}
-    header{grid-area:header;display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);backdrop-filter:blur(6px);box-shadow:0 8px 30px rgba(4,8,12,0.6)}
-    .sidebar{grid-area:sidebar;background:var(--panel);padding:16px;border-radius:12px;overflow:auto}
-    .main{grid-area:main;background:linear-gradient(180deg,var(--glass),transparent);padding:16px;border-radius:12px;overflow:auto}
-    .right{grid-area:right;background:var(--panel);padding:16px;border-radius:12px;overflow:auto}
-    h1{font-size:16px;margin:0}
-    .logo{display:flex;align-items:center;gap:10px}
-    .logo svg{width:36px;height:36px}
-    .nav{margin-top:18px;display:flex;flex-direction:column;gap:8px}
-    .nav button{background:transparent;border:0;color:var(--muted);padding:10px;border-radius:8px;text-align:left;cursor:pointer}
-    .nav button.active{color:var(--accent);background:linear-gradient(90deg,rgba(110,231,183,0.06),transparent)}
-    .card{background:var(--card);padding:12px;border-radius:12px;margin-bottom:12px}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial;color:#dfeef8;background:radial-gradient(1200px 600px at 10% 10%, rgba(123,97,255,0.06), transparent), linear-gradient(180deg,#071018 0%, #071827 100%);}
+
+    /* layout */
+    .app{display:grid;grid-template-columns:340px 1fr 420px;grid-template-rows:72px 1fr;grid-template-areas:"sidebar header header" "sidebar main right";gap:16px;padding:18px;height:100vh}
+    header{grid-area:header;border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;background:linear-gradient(90deg, rgba(255,255,255,0.02), transparent);backdrop-filter: blur(6px);box-shadow:var(--shadow)}
+    .sidebar{grid-area:sidebar;background:var(--panel);border-radius:14px;padding:14px;overflow:auto;border:1px solid var(--glass-border)}
+    .main{grid-area:main;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border-radius:14px;padding:16px;overflow:auto;border:1px solid var(--glass-border)}
+    .right{grid-area:right;background:var(--panel);border-radius:14px;padding:14px;overflow:auto;border:1px solid var(--glass-border)}
+
+    /* logo */
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo svg{width:46px;height:46px}
+    h1{margin:0;font-size:18px;letter-spacing:0.6px}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* navigation */
+    .nav{margin-top:18px;display:flex;flex-direction:column;gap:6px}
+    .nav button{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;text-align:left;font-weight:600}
+    .nav button .dot{width:10px;height:10px;border-radius:50%;background:transparent}
+    .nav button.active{background:linear-gradient(90deg, rgba(94,231,198,0.06), transparent);color:var(--accent);box-shadow:inset 0 1px 0 rgba(255,255,255,0.01)}
+
+    /* cards and utilities */
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:12px;border-radius:12px;margin-bottom:12px;box-shadow: 0 6px 18px rgba(2,6,10,0.35)}
     .flex{display:flex;gap:12px;align-items:center}
     .grow{flex:1}
-    /* Editor styles */
-    .editor{height:360px;background:#02050a;border-radius:10px;padding:8px;color:#d6e6ff;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
-    .preview{height:360px;background:#fff;border-radius:10px;padding:8px;overflow:auto}
+
+    /* editors */
+    .editor{height:360px;background:#05111a;border-radius:10px;padding:12px;color:#d6e6ff;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;border:1px solid rgba(255,255,255,0.02)}
+    .preview{height:360px;background:linear-gradient(180deg,#ffffff,#f7fbff);border-radius:10px;padding:12px;overflow:auto;border:1px solid rgba(2,6,10,0.06)}
     .toolbar{display:flex;gap:8px;align-items:center}
     input[type=range]{width:100%}
-    .file-drop{border:2px dashed rgba(255,255,255,0.03);padding:18px;border-radius:10px;text-align:center;color:var(--muted)}
-    .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    .thumb{width:110px;height:80px;object-fit:cover;border-radius:8px;cursor:pointer}
-    canvas{max-width:100%}
-    .mini-term{background:#02040a;color:#bfeee0;padding:12px;border-radius:8px;font-family:ui-monospace,monospace;height:180px;overflow:auto}
-    .kbd{background:#061019;padding:6px 8px;border-radius:6px;font-size:12px;color:var(--muted)}
-    .toggle{display:inline-flex;align-items:center;padding:6px;border-radius:999px;background:var(--glass-2);gap:6px}
-    .btn{background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.02);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
-    footer{font-size:12px;color:var(--muted);opacity:0.9}
+    .file-drop{border:2px dashed rgba(255,255,255,0.04);padding:18px;border-radius:12px;text-align:center;color:var(--muted);background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+    .thumb{width:120px;height:86px;object-fit:cover;border-radius:10px;cursor:pointer;border:1px solid rgba(255,255,255,0.03);transition:transform .18s ease, box-shadow .18s ease}
+    .thumb:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(2,6,10,0.6)}
 
-    /* small badges */
-    .badge{background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+    /* terminal */
+    .mini-term{background:linear-gradient(180deg,#021019,#04121a);color:#aeeedc;padding:12px;border-radius:8px;font-family:ui-monospace,monospace;height:180px;overflow:auto;border:1px solid rgba(255,255,255,0.02)}
 
-    /* modals and overlays */
-    .overlay{position:fixed;inset:0;background:rgba(2,6,10,0.6);display:none;align-items:center;justify-content:center}
-    .modal{background:linear-gradient(180deg,#071018,#0b1014);padding:18px;border-radius:12px;width:min(920px,95%);max-height:90vh;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
+    /* keyboard badge */
+    .kbd{background:#061019;padding:6px 8px;border-radius:6px;font-size:12px;color:var(--muted);box-shadow:inset 0 -1px 0 rgba(255,255,255,0.01)}
+
+    /* fancy buttons */
+    .btn{height:var(--btn-height);display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;border:0;cursor:pointer;font-weight:700;letter-spacing:0.6px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041018;box-shadow:0 8px 24px rgba(43,18,84,0.25);transition:transform .12s ease,box-shadow .12s ease}
+    .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03);box-shadow:none}
+    .btn:active{transform:translateY(1px)}
+    .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+
+    /* status */
+    .status{margin-left:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;color:var(--muted);font-size:13px}
+
+    /* overlays */
+    .overlay{position:fixed;inset:0;background:rgba(2,6,10,0.6);display:none;align-items:center;justify-content:center;z-index:1200}
+    .modal{background:linear-gradient(180deg,#071018,#08121a);padding:18px;border-radius:12px;width:min(920px,96%);max-height:90vh;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
 
     /* command palette */
-    .palette{width:640px;max-width:92%;background:#041018;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-    .palette input{width:100%;padding:10px;border-radius:8px;background:#020611;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff}
-    .palette ul{list-style:none;margin:8px 0 0 0;padding:0;max-height:240px;overflow:auto}
-    .palette li{padding:8px;border-radius:6px;cursor:pointer}
-    .palette li:hover{background:rgba(255,255,255,0.02)}
+    .palette{width:720px;max-width:92%;background:#03121a;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .palette input{width:100%;padding:12px;border-radius:10px;background:#021018;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff}
+    .palette ul{list-style:none;margin:8px 0 0 0;padding:0;max-height:260px;overflow:auto}
+    .palette li{padding:10px;border-radius:8px;cursor:pointer;color:var(--muted)}
+    .palette li:hover{background:linear-gradient(90deg, rgba(110,231,183,0.04), transparent);color:var(--accent)}
 
     /* responsive */
-    @media (max-width:1100px){.app{grid-template-columns:1fr;grid-template-areas:"header" "main";grid-template-rows:64px 1fr}.right,.sidebar{display:none}}
+    @media (max-width:1100px){.app{grid-template-columns:1fr;grid-template-areas:"header" "main";grid-template-rows:72px 1fr}.right,.sidebar{display:none}}
+
+    /* small utility tweaks */
+    .muted-2{color:rgba(255,255,255,0.55)}
+    .tiny{font-size:11px;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="app" id="app">
     <aside class="sidebar">
-      <div class="logo"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="5" fill="#0b1220"/><path d="M5 12h14" stroke="currentColor" stroke-opacity="0.12" stroke-width="1.5"/><path d="M7 8h10v8H7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      <div class="logo">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="8" fill="#06121a"/><path d="M12 24h24" stroke="#95f0da" stroke-width="1.8" stroke-linecap="round"/></svg>
         <div>
           <h1>Local Toolkit</h1>
-          <div style="font-size:12px;color:var(--muted)">single-file — offline-first (extended)</div>
+          <div class="muted">single-file — offline-first • Polished</div>
         </div>
       </div>
+
       <div class="nav" role="navigation" aria-label="Main">
-        <button class="active" data-view="dashboard">Dashboard</button>
-        <button data-view="file">Files</button>
-        <button data-view="images">Images</button>
-        <button data-view="audio">Audio</button>
-        <button data-view="editor">Editors</button>
-        <button data-view="tools">Tools</button>
-        <button data-view="settings">Settings</button>
+        <button class="active" data-view="dashboard"><span class="dot"></span> Dashboard</button>
+        <button data-view="file"><span class="dot"></span> Files</button>
+        <button data-view="images"><span class="dot"></span> Images</button>
+        <button data-view="audio"><span class="dot"></span> Audio</button>
+        <button data-view="editor"><span class="dot"></span> Editors</button>
+        <button data-view="tools"><span class="dot"></span> Tools</button>
+        <button data-view="settings"><span class="dot"></span> Settings</button>
       </div>
-      <div style="margin-top:12px">
+
+      <div style="margin-top:16px">
         <div class="card">
-          <div style="display:flex;justify-content:space-between"><strong>Quick actions</strong><span class="kbd">Ctrl+K</span></div>
-          <div style="margin-top:8px;display:flex;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><strong>Quick actions</strong><span class="kbd">Ctrl+K</span></div>
+          <div style="margin-top:10px;display:flex;gap:8px">
             <button class="btn" id="btn-import">Import</button>
-            <button class="btn" id="btn-clear">Clear</button>
-            <button class="btn" id="open-palette">Cmd Palette</button>
+            <button class="btn secondary" id="btn-clear">Clear</button>
+            <button class="btn ghost" id="open-palette">Cmd Palette</button>
           </div>
         </div>
+
         <div class="card">
           <strong>Storage</strong>
           <div style="font-size:12px;color:var(--muted);margin-top:6px">Saved items: <span id="stat-count">0</span></div>
-          <div style="margin-top:8px"><button class="btn" id="export-btn">Export JSON</button></div>
+          <div style="margin-top:8px"><button class="btn ghost" id="export-btn">Export JSON</button></div>
         </div>
       </div>
-      <footer style="margin-top:12px">Built for Thomas • Local only • No external requests</footer>
+
+      <footer style="margin-top:14px" class="tiny muted-2">Built for Thomas • Local only • No external requests</footer>
     </aside>
 
     <header>
       <div style="display:flex;align-items:center;gap:12px;width:100%">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div><strong id="view-title">Dashboard</strong></div>
-          <div style="color:var(--muted);font-size:13px">— an offline playground (extended)</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="display:flex;flex-direction:column"><div id="view-title" style="font-weight:800">Dashboard</div><div class="tiny muted">Your personal local workflow</div></div>
         </div>
-        <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
-          <div class="toggle" title="Theme">
-            <label style="font-size:13px;color:var(--muted)">Theme</label>
+
+        <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+          <div class="status" id="auto-status">All changes saved</div>
+          <div class="toggle" title="Theme" style="align-items:center;gap:8px">
+            <label class="tiny muted">Theme</label>
             <input type="checkbox" id="theme-toggle" aria-label="Toggle theme" />
           </div>
           <div style="display:flex;gap:8px;align-items:center">
             <div class="kbd">local</div>
-            <button class="btn" id="help-btn">Help</button>
+            <button class="btn secondary" id="help-btn">Help</button>
           </div>
         </div>
       </div>
@@ -116,42 +145,42 @@
     <main class="main" id="main">
       <!-- views loaded here -->
       <section id="dashboard" class="view">
-        <div class="card" style="display:flex;gap:12px;align-items:center">
+        <div class="card" style="display:flex;gap:16px;align-items:center">
           <div style="flex:1">
-            <h2 style="margin:0">Welcome — your extended local workbench</h2>
-            <p style="color:var(--muted)">This extended single-file site includes everything from the original plus: command palette, presets, image crop, improved markdown, file search, draggable thumbs, and more helpful utilities.</p>
-            <div style="display:flex;gap:8px;margin-top:8px">
+            <h2 style="margin:0">Welcome — polished local workbench</h2>
+            <p class="muted" style="margin-top:6px">Nice layout, prettier buttons, and — important — automatic saving on every editor and setting change. Built for working fast and safely.</p>
+            <div style="display:flex;gap:10px;margin-top:12px">
               <button class="btn" data-action="open-view" data-target="images">Open Image Lab</button>
-              <button class="btn" data-action="open-view" data-target="audio">Open Audio Lab</button>
-              <button class="btn" data-action="open-view" data-target="tools">Open Tools</button>
+              <button class="btn" data-action="open-view" data-target="editor">Open Editors</button>
+              <button class="btn secondary" data-action="open-view" data-target="tools">Utilities</button>
             </div>
           </div>
           <div style="width:320px">
-            <div style="background:linear-gradient(180deg,#06121a,transparent);padding:12px;border-radius:10px">
-              <div style="font-size:12px;color:var(--muted)">Storage usage (approx)</div>
-              <div style="font-weight:700;font-size:20px">LocalStorage: <span id="storage-size">0 KB</span></div>
+            <div style="background:linear-gradient(180deg,#05161c,transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)">
+              <div class="tiny muted">Local usage (approx)</div>
+              <div style="font-weight:800;font-size:20px;margin-top:6px">LocalStorage: <span id="storage-size">0 KB</span></div>
               <div style="margin-top:8px;color:var(--muted);font-size:12px">IndexedDB: <span id="idx-status">unknown</span></div>
             </div>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" style="margin-top:12px">
           <h3 style="margin:0">Quick file drop (images, audio, text)</h3>
-          <div id="drop" class="file-drop" tabindex="0">Drop files here or click to select — images & audio will be processed automatically</div>
-          <div style="margin-top:8px;display:flex;gap:8px;align-items:center"><input id="search-files" class="grow" placeholder="search files by name" style="padding:8px;border-radius:8px;background:#07111a;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff"/><button class="btn" id="btn-search">Search</button></div>
+          <div id="drop" class="file-drop" tabindex="0">Drop files here or click to select — images & audio processed automatically</div>
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center"><input id="search-files" class="grow" placeholder="search files by name" style="padding:10px;border-radius:10px;background:#021018;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff"/><button class="btn ghost" id="btn-search">Search</button></div>
           <div class="thumbs" id="thumbs"></div>
         </div>
 
-        <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
           <div>
             <h4 style="margin:0">Mini terminal</h4>
             <div id="mini-term" class="mini-term" aria-live="polite"></div>
-            <div style="display:flex;gap:8px;margin-top:8px"><input id="term-input" placeholder="type help" class="grow" style="padding:8px;border-radius:8px;background:#07111a;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff" /><button class="btn" id="term-send">Run</button></div>
+            <div style="display:flex;gap:8px;margin-top:8px"><input id="term-input" placeholder="type help" class="grow" style="padding:10px;border-radius:10px;background:#021018;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff" /><button class="btn ghost" id="term-send">Run</button></div>
           </div>
           <div>
             <h4 style="margin:0">Clipboard & snippets</h4>
-            <textarea id="snip" style="width:100%;height:180px;margin-top:8px;background:#02050a;color:#d6e6ff;border-radius:8px;padding:8px"></textarea>
-            <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="save-snip">Save Snippet</button><button class="btn" id="load-snip">Load Snippet</button><button class="btn" id="copy-snip">Copy</button></div>
+            <textarea id="snip" style="width:100%;height:180px;margin-top:8px;background:#04131a;color:#d6e6ff;border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,0.02)"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px"><button class="btn secondary" id="save-snip">Save Snippet</button><button class="btn secondary" id="load-snip">Load Snippet</button><button class="btn" id="copy-snip">Copy</button></div>
           </div>
         </div>
       </section>
@@ -160,7 +189,7 @@
         <div class="card">
           <h3>File Manager</h3>
           <input id="file-input" type="file" multiple style="margin-top:8px" />
-          <div style="margin-top:8px;display:flex;gap:8px"><button class="btn" id="save-file-list">Save manifest</button><button class="btn" id="clear-storage">Clear saved</button><button class="btn" id="download-all">Download All</button></div>
+          <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="save-file-list">Save manifest</button><button class="btn secondary" id="clear-storage">Clear saved</button><button class="btn ghost" id="download-all">Download All</button></div>
           <div id="file-list" style="margin-top:12px;color:var(--muted);white-space:pre-wrap"></div>
         </div>
       </section>
@@ -170,21 +199,21 @@
           <h3>Image Lab</h3>
           <div style="display:grid;grid-template-columns:1fr 380px;gap:12px">
             <div>
-              <div id="image-canvas-wrap" style="background:#081018;padding:8px;border-radius:8px">
+              <div id="image-canvas-wrap" style="background:#04141a;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)">
                 <canvas id="img-canvas" width="900" height="540"></canvas>
               </div>
               <div style="display:flex;gap:8px;margin-top:8px;font-size:13px">
                 <div style="flex:1">
-                  <label>Brightness <input id="brightness" type="range" min="-100" max="100" value="0"></label>
+                  <label class="tiny">Brightness <input id="brightness" type="range" min="-100" max="100" value="0"></label>
                 </div>
                 <div style="flex:1">
-                  <label>Contrast <input id="contrast" type="range" min="-100" max="100" value="0"></label>
+                  <label class="tiny">Contrast <input id="contrast" type="range" min="-100" max="100" value="0"></label>
                 </div>
               </div>
               <div style="display:flex;gap:8px;margin-top:8px">
                 <button class="btn" id="crop-toggle">Crop</button>
-                <button class="btn" id="reset-filters">Reset</button>
-                <select id="presets" style="background:#07111a;border:1px solid rgba(255,255,255,0.02);padding:6px;border-radius:6px;color:#d6e6ff">
+                <button class="btn secondary" id="reset-filters">Reset</button>
+                <select id="presets" style="background:#021018;border:1px solid rgba(255,255,255,0.02);padding:6px;border-radius:8px;color:#d6e6ff">
                   <option value="none">Presets</option>
                   <option value="film">Film look</option>
                   <option value="bw">B&W high contrast</option>
@@ -193,11 +222,10 @@
               </div>
             </div>
             <div>
-              <div style="display:flex;gap:8px;align-items:center;justify-content:space-between"><div style="font-weight:700">Histogram</div><div style="font-size:12px;color:var(--muted)">preview</div></div>
-              <canvas id="histogram" width="360" height="180" style="margin-top:8px;background:#050711;border-radius:8px"></canvas>
-              <div style="margin-top:8px"><button class="btn" id="export-image">Export PNG</button><button class="btn" id="download-original">Download Original</button></div>
+              <div style="display:flex;gap:8px;align-items:center;justify-content:space-between"><div style="font-weight:700">Histogram</div><div class="tiny muted">preview</div></div>
+              <canvas id="histogram" width="360" height="180" style="margin-top:8px;background:#031219;border-radius:10px"></canvas>
+              <div style="margin-top:8px"><button class="btn" id="export-image">Export PNG</button><button class="btn ghost" id="download-original">Download Original</button></div>
               <div style="margin-top:8px;color:var(--muted);font-size:13px">Image info: <span id="img-info">no image</span></div>
-              <div style="margin-top:12px;background:#07121a;padding:8px;border-radius:8px"><strong>Crop</strong><div style="font-size:12px;color:var(--muted);margin-top:6px">Use toggle to enable selection and crop the image.</div></div>
             </div>
           </div>
         </div>
@@ -209,15 +237,15 @@
           <input id="audio-input" type="file" accept="audio/*" style="margin-top:8px" />
           <div style="display:flex;gap:8px;margin-top:12px">
             <div style="flex:1">
-              <div id="audio-controls" style="background:#07121a;padding:12px;border-radius:8px">
-                <div id="audio-meta" style="color:var(--muted)">No audio loaded</div>
-                <canvas id="audio-visual" width="720" height="120" style="margin-top:8px;background:#02040a;border-radius:8px"></canvas>
-                <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="play-audio">Play</button><button class="btn" id="pause-audio">Stop</button><button class="btn" id="sine-test">Sine Demo</button></div>
+              <div id="audio-controls" style="background:#04121a;padding:12px;border-radius:10px">
+                <div id="audio-meta" class="muted">No audio loaded</div>
+                <canvas id="audio-visual" width="720" height="120" style="margin-top:8px;background:#021018;border-radius:8px"></canvas>
+                <div style="display:flex;gap:8px;margin-top:8px"><button class="btn" id="play-audio">Play</button><button class="btn secondary" id="pause-audio">Stop</button><button class="btn ghost" id="sine-test">Sine Demo</button></div>
               </div>
             </div>
             <div style="width:260px;display:flex;flex-direction:column;gap:8px">
-              <div style="background:#07121a;padding:8px;border-radius:8px"><strong>FFT</strong><div style="font-size:12px;color:var(--muted);margin-top:6px">Realtime frequency analysis. Use the slider to change detail.</div><input id="fft-size" type="range" min="256" max="4096" step="256" value="2048"></div>
-              <div style="background:#07121a;padding:8px;border-radius:8px"><strong>Options</strong><div style="font-size:12px;color:var(--muted);margin-top:6px">Fast/precise modes</div><label style="display:block;margin-top:6px"><input type="checkbox" id="show-freq" checked /> show frequencies</label></div>
+              <div style="background:#021018;padding:8px;border-radius:8px"><strong>FFT</strong><div class="tiny muted" style="margin-top:6px">Realtime frequency analysis</div><input id="fft-size" type="range" min="256" max="4096" step="256" value="2048"></div>
+              <div style="background:#021018;padding:8px;border-radius:8px"><strong>Options</strong><div class="tiny muted" style="margin-top:6px">Fast/precise modes</div><label style="display:block;margin-top:6px"><input type="checkbox" id="show-freq" checked /> show frequencies</label></div>
             </div>
           </div>
         </div>
@@ -259,24 +287,20 @@
             <button class="btn" id="btn-random-color">Random Palette</button>
             <button class="btn" id="btn-uid">Generate UID</button>
             <button class="btn" id="btn-time">Current Time</button>
-            <button class="btn" id="btn-clear-cache">Clear LocalStorage</button>
-            <button class="btn" id="btn-preview-html">Preview small HTML</button>
-            <button class="btn" id="btn-generate-sample">Generate Sample Files</button>
+            <button class="btn secondary" id="btn-clear-cache">Clear LocalStorage</button>
+            <button class="btn ghost" id="btn-preview-html">Preview small HTML</button>
+            <button class="btn secondary" id="btn-generate-sample">Generate Sample Files</button>
           </div>
           <div id="tool-output" style="margin-top:12px;color:var(--muted)"></div>
-        </div>
-        <div class="card">
-          <h4>Small utilities</h4>
-          <div style="display:flex;gap:8px"><input id="color-swatch" placeholder="#rrggbb" class="grow" style="padding:8px;border-radius:8px;background:#07111a;border:1px solid rgba(255,255,255,0.02);color:#d6e6ff"/><button class="btn" id="apply-color">Apply Theme Accent</button></div>
         </div>
       </section>
 
       <section id="settings" class="view" style="display:none">
         <div class="card">
           <h3>Settings</h3>
-          <div style="display:flex;gap:8px;align-items:center"><label>Autosave editors</label><input type="checkbox" id="autosave" /></div>
+          <div style="display:flex;gap:8px;align-items:center"><label class="tiny">Autosave editors</label><input type="checkbox" id="autosave" /></div>
           <div style="margin-top:8px;color:var(--muted);font-size:13px">All data stays in your browser. Use Export to back up.</div>
-          <div style="margin-top:8px"><label>Editor font size</label><input id="font-size" type="range" min="12" max="18" value="13" /></div>
+          <div style="margin-top:8px"><label class="tiny">Editor font size</label><input id="font-size" type="range" min="12" max="18" value="13" /></div>
         </div>
       </section>
 
@@ -286,12 +310,12 @@
       <div class="card">
         <h4>Inspector</h4>
         <div style="font-size:13px;color:var(--muted);margin-top:6px">Selected: <span id="ins-selected">none</span></div>
-        <div style="margin-top:8px"><strong>Shortcuts</strong><div style="font-size:12px;color:var(--muted);margin-top:6px">Ctrl+S save, Ctrl+K command palette, / open palette</div></div>
+        <div style="margin-top:8px"><strong>Shortcuts</strong><div class="tiny muted" style="margin-top:6px">Ctrl+S save, Ctrl+K command palette, / open palette</div></div>
       </div>
 
       <div class="card">
         <h4>About</h4>
-        <div style="font-size:13px;color:var(--muted);margin-top:6px">Single-file app — extended by ChatGPT. All local. If something fails due to file:// security, run a local server (python -m http.server).</div>
+        <div class="tiny muted" style="margin-top:6px">Single-file app — extended by ChatGPT. All local. If something fails due to file:// security, run a local server (python -m http.server).</div>
       </div>
 
       <div class="card">
@@ -308,225 +332,228 @@
   </div>
 
   <!-- overlays -->
-  <div id="overlay" class="overlay"><div class="modal" role="dialog" aria-modal="true"><div id="modal-content"></div><div style="text-align:right;margin-top:12px"><button class="btn" id="close-modal">Close</button></div></div></div>
+  <div id="overlay" class="overlay"><div class="modal" role="dialog" aria-modal="true"><div id="modal-content"></div><div style="text-align:right;margin-top:12px"><button class="btn ghost" id="close-modal">Close</button></div></div></div>
   <div id="palette-overlay" class="overlay" style="display:none;align-items:flex-start;padding-top:120px"><div class="palette" role="dialog"><input id="palette-input" placeholder="Type a command (help, open files, export, uid)"/><ul id="palette-list"></ul></div></div>
 
   <script>
-  // --- Utilities & state ---
-  const state = {files:[],images:[],audio:null,settings:{theme:'dark',autosave:false,fontSize:13}};
-  const el = (sel)=>document.querySelector(sel);
-  const els = (sel)=>Array.from(document.querySelectorAll(sel));
+  /* ====================================================
+     Polished Edition script
+     - fancier UI
+     - autosave on any editor/setting change (debounced)
+     - persistent thumbnails stored as data URLs (limited by localStorage)
+     - improved status indicator
+     ===================================================== */
 
-  // Navigation
+  const state = {files:[],images:[],audio:null,settings:{theme:'dark',autosave:true,fontSize:13}};
+  const el = s=>document.querySelector(s); const els = s=>Array.from(document.querySelectorAll(s));
+
+  // --- helpers ---
+  function safeJSONParse(s, fallback){try{return JSON.parse(s);}catch(e){return fallback}}
+  function now(){return new Date().toISOString()}
+
+  // --- auto-save scheduler (debounced) ---
+  let saveTimer = null; let saving = false; const SAVE_KEY = 'localtool.fullstate.v2';
+  function scheduleSave(delay=700){ document.getElementById('auto-status').textContent = 'Saving...'; if(saveTimer) clearTimeout(saveTimer); saveTimer = setTimeout(()=>{saveNow();},delay); }
+  function saveNow(){ try{ saving = true; const payload = {
+        meta:{ts:Date.now(), ver:2},
+        settings: state.settings,
+        files: state.files.map(f=>({name:f.name,type:f.type,size:f.size,ts:f.ts,dataUrl:f.dataUrl||null})),
+        images: state.images.map(i=>({name:i.file.name, url:i.url, dataUrl:i.dataUrl||null}))
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(payload));
+      document.getElementById('auto-status').textContent = 'All changes saved';
+  }catch(e){console.warn('save failed',e);document.getElementById('auto-status').textContent='Save failed';}
+    saving=false; }
+
+  // show quick status for manual operations
+  function flashStatus(msg, ms=1600){ const s = document.getElementById('auto-status'); const prev = s.textContent; s.textContent = msg; setTimeout(()=>s.textContent = prev, ms);} 
+
+  // --- navigation
   els('.nav button').forEach(b=>b.addEventListener('click',()=>{els('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');showView(b.dataset.view);}));
   els('[data-action=open-view]').forEach(b=>b.addEventListener('click',e=>showView(e.target.dataset.target)));
-  function showView(id){els('.view').forEach(v=>v.style.display='none');const s=document.getElementById(id);if(s)s.style.display='block';el('#view-title').textContent=id.charAt(0).toUpperCase()+id.slice(1);} 
+  function showView(id){ els('.view').forEach(v=>v.style.display='none'); const s=document.getElementById(id); if(s) s.style.display='block'; el('#view-title').textContent = id.charAt(0).toUpperCase()+id.slice(1); }
 
-  // Theme toggle
+  // initial view
+  showView('dashboard');
+
+  // --- theme handling ---
   const themeToggle = el('#theme-toggle');
-  themeToggle.addEventListener('change',e=>{document.documentElement.style.setProperty('--bg', e.target.checked ? '#ffffff':'#0f1115');state.settings.theme = e.target.checked? 'light':'dark';localStorage.setItem('localtool.settings',JSON.stringify(state.settings));});
-  // Load settings
-  (function loadSettings(){try{const s=JSON.parse(localStorage.getItem('localtool.settings'));if(s){state.settings = {...state.settings,...s};if(state.settings.theme==='light') themeToggle.checked = true; if(state.settings.autosave) el('#autosave').checked=true; if(state.settings.fontSize) el('#font-size').value=state.settings.fontSize; el('#font-size').dispatchEvent(new Event('input'));}}catch(e){console.warn(e)}
+  themeToggle.addEventListener('change',e=>{ state.settings.theme = e.target.checked ? 'light':'dark'; localStorage.setItem('localtool.settings', JSON.stringify(state.settings)); scheduleSave(300); document.documentElement.style.background = state.settings.theme==='light' ? 'linear-gradient(180deg,#f7fbff,#eef6ff)' : 'radial-gradient(1200px 600px at 10% 10%, rgba(123,97,255,0.06), transparent), linear-gradient(180deg,#071018 0%, #071827 100%)'; });
+
+  // Load saved settings + state (if present)
+  (function loadState(){ const raw = localStorage.getItem(SAVE_KEY); if(raw){ try{ const payload = JSON.parse(raw); if(payload.settings) state.settings = {...state.settings, ...payload.settings}; // apply
+        if(typeof state.settings.fontSize === 'number') document.querySelectorAll('.editor').forEach(t=>t.style.fontSize = state.settings.fontSize + 'px'); if(state.settings.autosave) el('#autosave').checked = true; if(state.settings.theme==='light') themeToggle.checked = true;
+        // rebuild files
+        if(payload.files && payload.files.length){ state.files = payload.files.map(f=>({name:f.name,type:f.type,size:f.size,ts:f.ts,dataUrl:f.dataUrl||null,url:f.dataUrl||null})); state.files.forEach(f=>{ if(f.dataUrl) appendThumb({name:f.name}, f.dataUrl); }); updateStats(); }
+      }catch(e){console.warn('failed load', e);} }
   })();
 
-  // Drop zone
+  // --- drop zone & file handling (store dataUrl for persistence) ---
   const drop = el('#drop');
-  drop.addEventListener('dragover',e=>{e.preventDefault();drop.style.borderColor='#2bffcc'});
+  drop.addEventListener('dragover',e=>{e.preventDefault(); drop.style.borderColor = 'rgba(94,231,198,0.6)'});
   ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,()=>{drop.style.borderColor=''}));
-  drop.addEventListener('drop',async e=>{e.preventDefault();handleFiles(e.dataTransfer.files)});
+  drop.addEventListener('drop',async e=>{ e.preventDefault(); await handleFiles(e.dataTransfer.files); scheduleSave(); });
   drop.addEventListener('click',()=>el('#file-input').click());
+  el('#file-input').addEventListener('change',e=>{ handleFiles(e.target.files).then(()=>scheduleSave()); });
 
-  el('#file-input').addEventListener('change',e=>handleFiles(e.target.files));
-  el('#audio-input').addEventListener('change',e=>handleAudio(e.target.files[0]));
+  async function handleFiles(files){ for(const f of files){ const file = f; const dataUrl = await fileToDataURL(file); const url = dataUrl; state.files.push({name:file.name,type:file.type,size:file.size,url,ts:Date.now(),dataUrl}); if(file.type.startsWith('image/')){ state.images.push({file:{name:file.name,type:file.type,size:file.size}, url, dataUrl}); appendThumb(file,url); } else if(file.type.startsWith('audio/')){ handleAudio(file); } else { pushLog('file: ' + file.name); } updateStats(); } }
 
-  function createThumbElement(file,url){const img = document.createElement('img');img.src = url;img.className='thumb';img.title=file.name;img.draggable=true;img.dataset.name=file.name;el('#thumbs').appendChild(img);
-    img.addEventListener('click',()=>{loadImageToCanvas(url,file)});
-    // drag reorder support
-    img.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',file.name)});
-    img.addEventListener('dblclick',()=>{openPreviewModal(file,url)});
-    return img;
-  }
+  function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr = new FileReader(); fr.onload = ()=>res(fr.result); fr.onerror = rej; fr.readAsDataURL(file); }); }
 
-  function appendThumb(file,url){createThumbElement(file,url);}
+  function createThumbElement(file,url){ const img = document.createElement('img'); img.src = url; img.className='thumb'; img.title = file.name; img.draggable = true; img.dataset.name = file.name; el('#thumbs').appendChild(img);
+    img.addEventListener('click', ()=>{ loadImageToCanvas(url, file); });
+    img.addEventListener('dblclick', ()=>{ openPreviewModal(file, url); });
+    img.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', file.name); });
+    return img; }
+  function appendThumb(file, url){ createThumbElement(file, url); }
 
-  async function handleFiles(files){for(const f of files){const url = URL.createObjectURL(f);state.files.push({name:f.name,type:f.type,size:f.size,url,ts:Date.now()});if(f.type.startsWith('image/')){appendThumb(f,url);state.images.push({file:f,url});}else if(f.type.startsWith('audio/')){handleAudio(f);}else{pushLog('file: ' + f.name);}updateStats();}} 
+  function updateStats(){ el('#stat-count').textContent = state.files.length; try{ el('#storage-size').textContent = Math.round(JSON.stringify(localStorage).length/1024) + ' KB'; }catch(e){ el('#storage-size').textContent = 'n/a' } }
 
-  function updateStats(){el('#stat-count').textContent = state.files.length;el('#storage-size').textContent = Math.round(JSON.stringify(localStorage).length/1024) + ' KB'}
-
-  // --- Mini terminal ---
+  // --- mini terminal ---
   const term = el('#mini-term');
-  function pushLog(txt){const line = document.createElement('div');line.textContent = '> '+txt;term.appendChild(line);term.scrollTop = term.scrollHeight}
-  el('#term-send').addEventListener('click',()=>runCmd(el('#term-input').value));
-  el('#term-input').addEventListener('keydown',e=>{if(e.key==='Enter') runCmd(e.target.value)});
-  function runCmd(cmd){if(!cmd) return;pushLog(cmd);const p=cmd.split(' ');switch(p[0]){case 'help':pushLog('commands: help, ls, clear, export, uid, time, open images');break;case 'ls':pushLog(state.files.map(f=>f.name).join(', ')||'no files');break;case 'clear':state.files=[];state.images=[];localStorage.removeItem('localtool.files');el('#thumbs').innerHTML='';updateStats();pushLog('cleared');break;case 'export':downloadJSON();break;case 'uid':pushLog(generateUID());break;case 'time':pushLog(new Date().toString());break;case 'open': if(p[1]==='images'){showView('images')} pushLog('opened view');break;default:pushLog('unknown command');}}
+  function pushLog(txt){ const line = document.createElement('div'); line.textContent = '> '+txt; term.appendChild(line); term.scrollTop = term.scrollHeight; }
+  el('#term-send').addEventListener('click', ()=>runCmd(el('#term-input').value));
+  el('#term-input').addEventListener('keydown', e=>{ if(e.key==='Enter') runCmd(e.target.value); });
+  function runCmd(cmd){ if(!cmd) return; pushLog(cmd); const p = cmd.split(' '); switch(p[0]){ case 'help': pushLog('commands: help, ls, clear, export, uid, time, open images'); break; case 'ls': pushLog(state.files.map(f=>f.name).join(', ')||'no files'); break; case 'clear': state.files=[]; state.images=[]; localStorage.removeItem(SAVE_KEY); el('#thumbs').innerHTML=''; updateStats(); pushLog('cleared'); break; case 'export': downloadJSON(); break; case 'uid': pushLog(generateUID()); break; case 'time': pushLog(new Date().toString()); break; case 'open': if(p[1]==='images'){ showView('images'); } pushLog('opened view'); break; default: pushLog('unknown command'); } scheduleSave(400); }
 
-  // --- Snippets ---
-  el('#save-snip').addEventListener('click',()=>{localStorage.setItem('localtool.snip',el('#snip').value);pushLog('snippet saved')});
-  el('#load-snip').addEventListener('click',()=>{el('#snip').value = localStorage.getItem('localtool.snip')||'';pushLog('snippet loaded')});
-  el('#copy-snip').addEventListener('click',()=>{navigator.clipboard.writeText(el('#snip').value||'');pushLog('copied to clipboard')});
+  // --- snippets ---
+  el('#save-snip').addEventListener('click', ()=>{ localStorage.setItem('localtool.snip', el('#snip').value); pushLog('snippet saved'); scheduleSave(); });
+  el('#load-snip').addEventListener('click', ()=>{ el('#snip').value = localStorage.getItem('localtool.snip')||''; pushLog('snippet loaded'); });
+  el('#copy-snip').addEventListener('click', ()=>{ navigator.clipboard.writeText(el('#snip').value||''); pushLog('copied to clipboard'); });
 
-  // --- Image canvas & filters/histogram & crop ---
-  const imgCanvas = el('#img-canvas'); const imgCtx = imgCanvas.getContext('2d'); let currentImage = null; let originalImageData = null; let cropMode=false; let cropRect=null;
-  function loadImageToCanvas(src,file){const img=new Image();img.onload=()=>{const w=Math.min(1400,img.width);const h=Math.floor(img.height*(w/img.width));imgCanvas.width=w;imgCanvas.height=h;imgCtx.clearRect(0,0,w,h);imgCtx.drawImage(img,0,0,w,h);originalImageData = imgCtx.getImageData(0,0,w,h);currentImage={img,source:src,file};el('#img-info').textContent = file? file.name + ' ('+file.type +', '+Math.round(file.size/1024)+'KB)':'image';computeHistogram();};img.crossOrigin='anonymous';img.src=src}
-  el('#brightness').addEventListener('input',applyFilters);el('#contrast').addEventListener('input',applyFilters);
-  el('#presets').addEventListener('change',e=>{const v=e.target.value;applyPreset(v)});
-  el('#reset-filters').addEventListener('click',()=>{el('#brightness').value=0;el('#contrast').value=0;applyFilters()});
-  el('#crop-toggle').addEventListener('click',()=>{cropMode=!cropMode;el('#crop-toggle').textContent = cropMode? 'Exit crop':'Crop';if(!cropMode) cropRect=null;renderCanvas()});
+  // --- image canvas & filters & crop (autosave on changes) ---
+  const imgCanvas = el('#img-canvas'); const imgCtx = imgCanvas.getContext('2d'); let currentImage=null; let originalImageData=null; let cropMode=false; let cropRect=null;
+  function loadImageToCanvas(src, file){ const img = new Image(); img.onload = ()=>{ const w = Math.min(1400, img.width); const h = Math.floor(img.height*(w/img.width)); imgCanvas.width = w; imgCanvas.height = h; imgCtx.clearRect(0,0,w,h); imgCtx.drawImage(img,0,0,w,h); originalImageData = imgCtx.getImageData(0,0,w,h); currentImage = {img,source:src,file}; el('#img-info').textContent = file? file.name + ' ('+file.type+', '+Math.round(file.size/1024)+'KB)':'image'; computeHistogram(); scheduleSave(); }; img.crossOrigin='anonymous'; img.src = src; }
 
-  function applyPreset(name){if(!originalImageData) return; if(name==='film'){el('#brightness').value = 6; el('#contrast').value=12}else if(name==='bw'){el('#brightness').value=0; el('#contrast').value=40}else if(name==='vivid'){el('#brightness').value=8; el('#contrast').value=28} applyFilters();}
+  // filter inputs
+  el('#brightness').addEventListener('input', ()=>{ applyFilters(); scheduleSave(); });
+  el('#contrast').addEventListener('input', ()=>{ applyFilters(); scheduleSave(); });
+  el('#presets').addEventListener('change', e=>{ applyPreset(e.target.value); scheduleSave(); });
+  el('#reset-filters').addEventListener('click', ()=>{ el('#brightness').value=0; el('#contrast').value=0; applyFilters(); scheduleSave(); });
+  el('#crop-toggle').addEventListener('click', ()=>{ cropMode = !cropMode; el('#crop-toggle').textContent = cropMode? 'Exit crop':'Crop'; if(!cropMode) cropRect=null; renderCanvas(); });
 
-  function applyFilters(){if(!originalImageData) return;const bright = Number(el('#brightness').value);const contrast = Number(el('#contrast').value);const data = new Uint8ClampedArray(originalImageData.data);const factor = (259*(contrast+255))/(255*(259-contrast));for(let i=0;i<data.length;i+=4){for(let c=0;c<3;c++){let v = data[i+c]; v = factor*(v-128)+128; v += bright; data[i+c]=Math.max(0,Math.min(255, v));}}const id = new ImageData(data, originalImageData.width, originalImageData.height);imgCtx.putImageData(id,0,0);computeHistogram();renderCanvas();}
+  function applyPreset(name){ if(!originalImageData) return; if(name==='film'){ el('#brightness').value=6; el('#contrast').value=12; } else if(name==='bw'){ el('#brightness').value=0; el('#contrast').value=40; } else if(name==='vivid'){ el('#brightness').value=8; el('#contrast').value=28; } applyFilters(); }
 
-  function renderCanvas(){if(!currentImage) return; if(cropMode && cropRect){ // draw overlay
-      imgCtx.putImageData(new ImageData(new Uint8ClampedArray(originalImageData.data),originalImageData.width,originalImageData.height),0,0);
-      imgCtx.strokeStyle='rgba(110,231,183,0.9)'; imgCtx.lineWidth=2; imgCtx.strokeRect(cropRect.x,cropRect.y,cropRect.w,cropRect.h);
-      imgCtx.fillStyle='rgba(0,0,0,0.35)'; // shade outside
-      imgCtx.beginPath(); imgCtx.rect(0,0,imgCanvas.width,imgCanvas.height); imgCtx.rect(cropRect.x,cropRect.y,cropRect.w,cropRect.h); imgCtx.fill('evenodd');
-    }}
+  function applyFilters(){ if(!originalImageData) return; const bright = Number(el('#brightness').value); const contrast = Number(el('#contrast').value); const data = new Uint8ClampedArray(originalImageData.data); const factor = (259*(contrast+255))/(255*(259-contrast)); for(let i=0;i<data.length;i+=4){ for(let c=0;c<3;c++){ let v = data[i+c]; v = factor*(v-128)+128; v += bright; data[i+c] = Math.max(0, Math.min(255, v)); } } const id = new ImageData(data, originalImageData.width, originalImageData.height); imgCtx.putImageData(id,0,0); computeHistogram(); renderCanvas(); // persist modified canvas as dataURL to files state
+    if(currentImage){ try{ const dataUrl = imgCanvas.toDataURL('image/png'); // find matching file and update dataUrl
+        const idx = state.files.findIndex(f=>f.name===currentImage.file.name); if(idx>=0){ state.files[idx].dataUrl = dataUrl; } const imgIdx = state.images.findIndex(i=>i.file.name===currentImage.file.name); if(imgIdx>=0){ state.images[imgIdx].dataUrl = dataUrl; state.images[imgIdx].url = dataUrl; } scheduleSave(600); }catch(e){ console.warn('could not persist canvas', e); } } }
 
-  function computeHistogram(){const w=imgCanvas.width,h=imgCanvas.height;const id = imgCtx.getImageData(0,0,w,h);const bins=new Uint32Array(256);for(let i=0;i<id.data.length;i+=4){const r=id.data[i],g=id.data[i+1],b=id.data[i+2];const lum = Math.floor(0.2126*r+0.7152*g+0.0722*b);bins[lum]++;}
-    const c = el('#histogram');const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);const max = Math.max(...bins)||1;for(let i=0;i<256;i++){const hval = (bins[i]/max)*(c.height-4);ctx.fillStyle='rgba(110,231,183,0.9)';ctx.fillRect(i*(c.width/256),c.height-hval,Math.max(1,c.width/256),hval);} }
+  function renderCanvas(){ if(!currentImage) return; if(cropMode && cropRect){ imgCtx.putImageData(new ImageData(new Uint8ClampedArray(originalImageData.data), originalImageData.width, originalImageData.height),0,0); imgCtx.strokeStyle='rgba(94,231,198,0.95)'; imgCtx.lineWidth=2; imgCtx.strokeRect(cropRect.x,cropRect.y,cropRect.w,cropRect.h); imgCtx.fillStyle='rgba(0,0,0,0.35)'; imgCtx.beginPath(); imgCtx.rect(0,0,imgCanvas.width,imgCanvas.height); imgCtx.rect(cropRect.x,cropRect.y,cropRect.w,cropRect.h); imgCtx.fill('evenodd'); } }
 
-  el('#export-image').addEventListener('click',()=>{if(!currentImage) return;const a=document.createElement('a');a.href=imgCanvas.toDataURL('image/png');a.download='edited-'+(currentImage.file?currentImage.file.name:'image')+'.png';a.click()});
-  el('#download-original').addEventListener('click',()=>{if(!currentImage) return;const a=document.createElement('a');a.href=currentImage.source;a.download=currentImage.file? currentImage.file.name: 'image';a.click()});
+  function computeHistogram(){ try{ const w=imgCanvas.width,h=imgCanvas.height; const id = imgCtx.getImageData(0,0,w,h); const bins = new Uint32Array(256); for(let i=0;i<id.data.length;i+=4){ const r=id.data[i],g=id.data[i+1],b=id.data[i+2]; const lum=Math.floor(0.2126*r+0.7152*g+0.0722*b); bins[lum]++; } const c = el('#histogram'); const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); const max = Math.max(...bins)||1; for(let i=0;i<256;i++){ const hval=(bins[i]/max)*(c.height-4); ctx.fillStyle='rgba(94,231,198,0.95)'; ctx.fillRect(i*(c.width/256), c.height-hval, Math.max(1,c.width/256), hval); } }catch(e){ console.warn('hist error',e); } }
+
+  el('#export-image').addEventListener('click', ()=>{ if(!currentImage) return; const a=document.createElement('a'); a.href = imgCanvas.toDataURL('image/png'); a.download = 'edited-'+(currentImage.file?currentImage.file.name:'image')+'.png'; a.click(); flashStatus('Exported PNG'); });
+  el('#download-original').addEventListener('click', ()=>{ if(!currentImage) return; const a=document.createElement('a'); a.href = currentImage.source; a.download = currentImage.file? currentImage.file.name: 'image'; a.click(); });
 
   // crop interaction
   let dragStart=null;
-  imgCanvas.addEventListener('mousedown',e=>{if(!cropMode) return; dragStart = {x:e.offsetX,y:e.offsetY}; cropRect = {x:dragStart.x,y:dragStart.y,w:0,h:0};});
-  imgCanvas.addEventListener('mousemove',e=>{if(!cropMode || !dragStart) return; const x=e.offsetX,y=e.offsetY; cropRect.w = x-dragStart.x; cropRect.h = y-dragStart.y; cropRect.x = Math.min(dragStart.x,x); cropRect.y = Math.min(dragStart.y,y); renderCanvas();});
-  imgCanvas.addEventListener('mouseup',e=>{if(!cropMode) return; dragStart=null; // cropRect is ready
-    if(cropRect && Math.abs(cropRect.w)>10 && Math.abs(cropRect.h)>10){ // perform crop
-      const tmp = document.createElement('canvas'); tmp.width = Math.abs(cropRect.w); tmp.height = Math.abs(cropRect.h); tmp.getContext('2d').drawImage(imgCanvas, cropRect.x, cropRect.y, cropRect.w, cropRect.h, 0, 0, tmp.width, tmp.height); imgCanvas.width = tmp.width; imgCanvas.height = tmp.height; imgCtx.clearRect(0,0,tmp.width,tmp.height); imgCtx.drawImage(tmp,0,0); originalImageData = imgCtx.getImageData(0,0,tmp.width,tmp.height); pushLog('cropped'); cropMode=false; el('#crop-toggle').textContent='Crop'; }
-  });
+  imgCanvas.addEventListener('mousedown', e=>{ if(!cropMode) return; dragStart={x:e.offsetX,y:e.offsetY}; cropRect={x:dragStart.x,y:dragStart.y,w:0,h:0}; });
+  imgCanvas.addEventListener('mousemove', e=>{ if(!cropMode || !dragStart) return; const x=e.offsetX,y=e.offsetY; cropRect.w = x-dragStart.x; cropRect.h = y-dragStart.y; cropRect.x = Math.min(dragStart.x,x); cropRect.y = Math.min(dragStart.y,y); renderCanvas(); });
+  imgCanvas.addEventListener('mouseup', e=>{ if(!cropMode) return; dragStart=null; if(cropRect && Math.abs(cropRect.w)>10 && Math.abs(cropRect.h)>10){ const tmp=document.createElement('canvas'); tmp.width=Math.abs(cropRect.w); tmp.height=Math.abs(cropRect.h); tmp.getContext('2d').drawImage(imgCanvas, cropRect.x, cropRect.y, cropRect.w, cropRect.h, 0, 0, tmp.width, tmp.height); imgCanvas.width = tmp.width; imgCanvas.height = tmp.height; imgCtx.clearRect(0,0,tmp.width,tmp.height); imgCtx.drawImage(tmp,0,0); originalImageData = imgCtx.getImageData(0,0,tmp.width,tmp.height); pushLog('cropped'); cropMode=false; el('#crop-toggle').textContent='Crop'; scheduleSave(700); } });
 
-  // --- Audio handling & analyser ---
-  let audioCtx,analyser,sourceNode,audioBuffer,animId, audioElem,oscNode; let sinePlaying=false;
-  async function handleAudio(file){if(!file) return;const arr = await file.arrayBuffer();if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();audioBuffer = await audioCtx.decodeAudioData(arr.slice(0));el('#audio-meta').textContent = file.name + ' — ' + Math.round(file.size/1024)+'KB';setupAudioNodes();}
-  function setupAudioNodes(){try{if(!audioBuffer) return;if(sourceNode){try{sourceNode.disconnect();}catch(e){} }analyser = audioCtx.createAnalyser();analyser.fftSize = Number(el('#fft-size').value)||2048;sourceNode = audioCtx.createBufferSource();sourceNode.buffer = audioBuffer;sourceNode.connect(analyser);analyser.connect(audioCtx.destination);const canvas=el('#audio-visual');const ctx=canvas.getContext('2d');function draw(){const data = new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(data);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.beginPath();for(let i=0;i<data.length;i+=4){const v = data[i]/128.0;const y = (v*canvas.height)/2;if(i===0) ctx.moveTo(i/data.length*canvas.width,y); else ctx.lineTo(i/data.length*canvas.width,y);}ctx.strokeStyle='rgba(110,231,183,0.9)';ctx.stroke();animId=requestAnimationFrame(draw);} draw();}catch(e){console.warn(e)}}
-  el('#play-audio').addEventListener('click',()=>{try{if(!audioBuffer) return; if(!sourceNode){setupAudioNodes()} sourceNode.start(0);}catch(e){ // restart logic
-      try{setupAudioNodes(); sourceNode.start(0);}catch(err){console.warn(err)} }});
-  el('#pause-audio').addEventListener('click',()=>{try{if(sourceNode) sourceNode.stop(); if(animId) cancelAnimationFrame(animId);}catch(e){}});
-  // sine demo
-  el('#sine-test').addEventListener('click',()=>{if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(!sinePlaying){oscNode = audioCtx.createOscillator();oscNode.type='sine';oscNode.frequency.value = 440;oscNode.connect(audioCtx.destination);oscNode.start();sinePlaying=true;el('#sine-test').textContent='Stop Demo';pushLog('sine started')}else{oscNode.stop();sinePlaying=false;el('#sine-test').textContent='Sine Demo';pushLog('sine stopped')}});
-  el('#fft-size').addEventListener('input',()=>{if(analyser) analyser.fftSize = Number(el('#fft-size').value)});
+  // --- audio handling & analyser ---
+  let audioCtx, analyser, sourceNode, audioBuffer, animId, oscNode; let sinePlaying=false;
+  async function handleAudio(file){ if(!file) return; const arr = await file.arrayBuffer(); if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); audioBuffer = await audioCtx.decodeAudioData(arr.slice(0)); el('#audio-meta').textContent = file.name + ' — ' + Math.round(file.size/1024)+'KB'; setupAudioNodes(); scheduleSave(); }
+  function setupAudioNodes(){ try{ if(!audioBuffer) return; if(sourceNode) try{ sourceNode.disconnect(); }catch(_){} analyser = audioCtx.createAnalyser(); analyser.fftSize = Number(el('#fft-size').value)||2048; sourceNode = audioCtx.createBufferSource(); sourceNode.buffer = audioBuffer; sourceNode.connect(analyser); analyser.connect(audioCtx.destination); const canvas=el('#audio-visual'); const ctx=canvas.getContext('2d'); function draw(){ const data = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(data); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.beginPath(); for(let i=0;i<data.length;i+=4){ const v=data[i]/128.0; const y=(v*canvas.height)/2; if(i===0) ctx.moveTo(i/data.length*canvas.width,y); else ctx.lineTo(i/data.length*canvas.width,y); } ctx.strokeStyle='rgba(94,231,198,0.95)'; ctx.stroke(); animId = requestAnimationFrame(draw); } draw(); }catch(e){ console.warn(e); } }
+  el('#play-audio').addEventListener('click', ()=>{ try{ if(!audioBuffer) return; if(!sourceNode) setupAudioNodes(); sourceNode.start(0); }catch(e){ try{ setupAudioNodes(); sourceNode.start(0); }catch(err){ console.warn(err); } } });
+  el('#pause-audio').addEventListener('click', ()=>{ try{ if(sourceNode) sourceNode.stop(); if(animId) cancelAnimationFrame(animId); }catch(e){} });
+  el('#sine-test').addEventListener('click', ()=>{ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(!sinePlaying){ oscNode = audioCtx.createOscillator(); oscNode.type='sine'; oscNode.frequency.value=440; oscNode.connect(audioCtx.destination); oscNode.start(); sinePlaying=true; el('#sine-test').textContent='Stop Demo'; pushLog('sine started'); } else { oscNode.stop(); sinePlaying=false; el('#sine-test').textContent='Sine Demo'; pushLog('sine stopped'); } scheduleSave(); });
+  el('#fft-size').addEventListener('input', ()=>{ if(analyser) analyser.fftSize = Number(el('#fft-size').value); scheduleSave(); });
 
-  // --- Markdown rendering (improved sanitizer + markdown) ---
-  function mdToHtml(md){ // improved small markdown -> html (headers, bold, lists, code, links)
-    const esc = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const lines = md.split('\n');let out='';let inList=false;let inCode=false;let codeBlock='';
-    for(let raw of lines){let l = raw.replace(/\t/g,'  ');
-      if(/^```/.test(l)){inCode=!inCode; if(inCode){codeBlock='';} else {out+='<pre><code>'+esc(codeBlock)+'</code></pre>';} continue}
-      if(inCode){codeBlock += l+'\n'; continue}
-      if(/^\s*$/.test(l)){ if(inList){out+='</ul>';inList=false;} out+='<p></p>'; continue;} if(/^#{1,6}\s/.test(l)){ const c = l.match(/^#{1,6}/)[0].length; out+=`<h${c}>${esc(l.replace(/^#{1,6}\s/,'').trim())}</h${c}>`; continue;} if(/^\*\s+/.test(l)){ if(!inList){out+='<ul>';inList=true;} out+='<li>'+esc(l.replace(/^\*\s+/,''))+'</li>'; continue;} // inline links
-      l = l.replace(/\[(.*?)\]\((.*?)\)/g,(m,t,u)=>`<a href="${u}" target="_blank" rel="noreferrer">${esc(t)}</a>`);
-      // inline bold and italics
-      l = l.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-      l = l.replace(/\*(.+?)\*/g,'<em>$1</em>');
-      out+='<p>'+l+'</p>';
-    }
-    if(inList) out+='</ul>';
-    return out;
-  }
-  el('#md-input').addEventListener('input',e=>{el('#md-preview').innerHTML = mdToHtml(e.target.value); if(el('#autosave').checked) localStorage.setItem('localtool.md',e.target.value)});
-  // load saved
+  // --- markdown rendering ---
+  function mdToHtml(md){ const esc = s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); const lines = md.split('\n'); let out=''; let inList=false; let inCode=false; let codeBlock=''; for(let raw of lines){ let l = raw.replace(/\t/g,'  '); if(/^```/.test(l)){ inCode = !inCode; if(inCode){ codeBlock=''; } else { out += '<pre><code>'+esc(codeBlock)+'</code></pre>'; } continue; } if(inCode){ codeBlock += l+'\n'; continue; } if(/^\s*$/.test(l)){ if(inList){ out += '</ul>'; inList=false; } out += '<p></p>'; continue; } if(/^#{1,6}\s/.test(l)){ const c = l.match(/^#{1,6}/)[0].length; out+=`<h${c}>${esc(l.replace(/^#{1,6}\s/,'').trim())}</h${c}>`; continue; } if(/^\*\s+/.test(l)){ if(!inList){ out += '<ul>'; inList=true; } out += '<li>'+esc(l.replace(/^\*\s+/,''))+'</li>'; continue; } l = l.replace(/\[(.*?)\]\((.*?)\)/g,(m,t,u)=>`<a href="${u}" target="_blank" rel="noreferrer">${esc(t)}</a>`); l = l.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>'); l = l.replace(/\*(.+?)\*/g,'<em>$1</em>'); out += '<p>'+l+'</p>'; } if(inList) out+='</ul>'; return out; }
+  el('#md-input').addEventListener('input', e=>{ el('#md-preview').innerHTML = mdToHtml(e.target.value); if(el('#autosave').checked) localStorage.setItem('localtool.md', e.target.value); scheduleSave(500); });
   if(localStorage.getItem('localtool.md')) el('#md-input').value = localStorage.getItem('localtool.md'); el('#md-input').dispatchEvent(new Event('input'));
 
-  // HTML playground
-  el('#html-input').addEventListener('input',e=>{const frame = el('#html-preview');const doc = frame.contentDocument || frame.contentWindow.document;doc.open();doc.write(e.target.value);doc.close(); if(el('#autosave').checked) localStorage.setItem('localtool.html',e.target.value)});
+  // --- HTML playground ---
+  el('#html-input').addEventListener('input', e=>{ const frame = el('#html-preview'); const doc = frame.contentDocument || frame.contentWindow.document; doc.open(); doc.write(e.target.value); doc.close(); if(el('#autosave').checked) localStorage.setItem('localtool.html', e.target.value); scheduleSave(500); });
   if(localStorage.getItem('localtool.html')) el('#html-input').value = localStorage.getItem('localtool.html'); el('#html-input').dispatchEvent(new Event('input'));
 
-  // Tools
-  el('#btn-random-color').addEventListener('click',()=>{const pal = Array.from({length:5},()=>'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'));el('#tool-output').textContent = 'Palette: '+pal.join(', ');});
-  el('#btn-uid').addEventListener('click',()=>{el('#tool-output').textContent = 'UID: '+generateUID()});
-  el('#btn-time').addEventListener('click',()=>{el('#tool-output').textContent = new Date().toString()});
-  el('#btn-clear-cache').addEventListener('click',()=>{localStorage.clear();pushLog('localStorage cleared');});
-  el('#btn-preview-html').addEventListener('click',()=>{showModal('<h3>Small HTML</h3><div style="background:#fff;color:#000;padding:8px;border-radius:6px">'+el('#html-input').value+'</div>')});
-  el('#btn-generate-sample').addEventListener('click',generateSampleFiles);
+  // --- utilities ---
+  el('#btn-random-color').addEventListener('click', ()=>{ const pal = Array.from({length:5}, ()=> '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0')); el('#tool-output').textContent = 'Palette: '+pal.join(', '); scheduleSave(); });
+  el('#btn-uid').addEventListener('click', ()=>{ el('#tool-output').textContent = 'UID: '+generateUID(); scheduleSave(); });
+  el('#btn-time').addEventListener('click', ()=>{ el('#tool-output').textContent = new Date().toString(); scheduleSave(); });
+  el('#btn-clear-cache').addEventListener('click', ()=>{ localStorage.clear(); pushLog('localStorage cleared'); scheduleSave(); });
+  el('#btn-preview-html').addEventListener('click', ()=>{ showModal('<h3>Small HTML</h3><div style="background:#fff;color:#000;padding:8px;border-radius:6px">'+el('#html-input').value+'</div>'); });
+  el('#btn-generate-sample').addEventListener('click', generateSampleFiles);
 
-  function generateUID(){return 'id-'+Math.random().toString(36).slice(2,10)+'-'+Date.now().toString(36)}
+  function generateUID(){ return 'id-'+Math.random().toString(36).slice(2,10)+'-'+Date.now().toString(36); }
 
-  // Export/import
-  function downloadJSON(){const data = {files:state.files,images:state.images.map(i=>({name:i.file.name,type:i.file.type,size:i.file.size}))};const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(data,null,2));a.download='localtool-export-'+Date.now()+'.json';a.click();}
-  el('#export-btn').addEventListener('click',downloadJSON);
+  // export/import
+  function downloadJSON(){ const data = {files:state.files,images:state.images.map(i=>({name:i.file.name,type:i.file.type,size:i.file.size,dataUrl:i.dataUrl||null}))}; const a=document.createElement('a'); a.href='data:application/json,'+encodeURIComponent(JSON.stringify(data,null,2)); a.download='localtool-export-'+Date.now()+'.json'; a.click(); flashStatus('Exported JSON'); }
+  el('#export-btn').addEventListener('click', downloadJSON);
 
-  // Save & load
-  el('#save-file-list').addEventListener('click',()=>{localStorage.setItem('localtool.files',JSON.stringify(state.files));pushLog('manifest saved')});
-  el('#clear-storage').addEventListener('click',()=>{localStorage.removeItem('localtool.files');pushLog('saved files cleared')});
+  // save & load
+  el('#save-file-list').addEventListener('click', ()=>{ localStorage.setItem('localtool.files', JSON.stringify(state.files)); pushLog('manifest saved'); scheduleSave(); });
+  el('#clear-storage').addEventListener('click', ()=>{ localStorage.removeItem('localtool.files'); pushLog('saved files cleared'); scheduleSave(); });
 
-  // buttons
-  el('#btn-import').addEventListener('click',()=>el('#file-input').click());
-  el('#btn-clear').addEventListener('click',()=>{state.files=[];state.images=[];localStorage.removeItem('localtool.files');el('#thumbs').innerHTML='';updateStats();pushLog('workspace cleared')});
+  // import/download
+  el('#btn-import').addEventListener('click', ()=> el('#file-input').click());
+  el('#btn-clear').addEventListener('click', ()=>{ state.files=[]; state.images=[]; localStorage.removeItem('localtool.files'); el('#thumbs').innerHTML=''; updateStats(); pushLog('workspace cleared'); scheduleSave(); });
 
   // keyboard shortcuts
-  window.addEventListener('keydown',(e)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();localStorage.setItem('localtool.md',el('#md-input').value);pushLog('saved');} if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openPalette();} if(e.key==='/'){e.preventDefault();openPalette();}})
+  window.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){ e.preventDefault(); localStorage.setItem('localtool.md', el('#md-input').value); pushLog('saved'); scheduleSave(100); } if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); openPalette(); } if(e.key==='/'){ e.preventDefault(); openPalette(); } });
 
   // command palette
-  function openPalette(){el('#palette-overlay').style.display='flex';el('#palette-input').focus();populatePalette('');}
-  el('#open-palette').addEventListener('click',openPalette);
-  el('#palette-input').addEventListener('input',e=>populatePalette(e.target.value));
-  el('#palette-input').addEventListener('keydown',e=>{if(e.key==='Escape') closePalette(); if(e.key==='Enter'){const first = el('#palette-list li'); if(first) first.click();}});
-  function closePalette(){el('#palette-overlay').style.display='none';el('#palette-input').value='';}
-  el('#palette-overlay').addEventListener('click',e=>{if(e.target.id==='palette-overlay') closePalette()});
+  function openPalette(){ el('#palette-overlay').style.display = 'flex'; el('#palette-input').focus(); populatePalette(''); }
+  el('#open-palette').addEventListener('click', openPalette);
+  el('#palette-input').addEventListener('input', e=> populatePalette(e.target.value));
+  el('#palette-input').addEventListener('keydown', e=>{ if(e.key==='Escape') closePalette(); if(e.key==='Enter'){ const first = el('#palette-list li'); if(first) first.click(); } });
+  function closePalette(){ el('#palette-overlay').style.display='none'; el('#palette-input').value=''; }
+  el('#palette-overlay').addEventListener('click', e=> { if(e.target.id==='palette-overlay') closePalette(); });
 
-  const commands = [
-    {title:'Help',act:()=>showHelp()},
-    {title:'Open Images',act:()=>showView('images')},
-    {title:'Open Audio',act:()=>showView('audio')},
-    {title:'Export JSON',act:()=>downloadJSON()},
-    {title:'Generate UID',act:()=>pushLog(generateUID())}
-  ];
-  function populatePalette(filter){const ul=el('#palette-list');ul.innerHTML='';commands.filter(c=>c.title.toLowerCase().includes(filter.toLowerCase())).forEach(c=>{const li=document.createElement('li');li.textContent=c.title;li.addEventListener('click',()=>{c.act();closePalette()});ul.appendChild(li)})}
+  const commands = [ {title:'Help',act:()=>showHelp()}, {title:'Open Images',act:()=>showView('images')}, {title:'Open Audio',act:()=>showView('audio')}, {title:'Export JSON',act:()=>downloadJSON()}, {title:'Generate UID',act:()=>pushLog(generateUID())} ];
+  function populatePalette(filter){ const ul=el('#palette-list'); ul.innerHTML=''; commands.filter(c=>c.title.toLowerCase().includes(filter.toLowerCase())).forEach(c=>{ const li=document.createElement('li'); li.textContent=c.title; li.addEventListener('click', ()=>{ c.act(); closePalette(); }); ul.appendChild(li); }); }
 
-  // help
-  function showHelp(){showModal('<h3>Local Toolkit — quick help</h3><ul><li>Drag & drop files</li><li>Ctrl+K / / open command palette</li><li>Image crop: toggle, draw a rectangle</li><li>Mini terminal: try "ls", "uid", "export"</li></ul>')}
-  el('#help-btn').addEventListener('click',showHelp);
+  // help & modal
+  function showHelp(){ showModal('<h3>Local Toolkit — help</h3><ul><li>Drag & drop files</li><li>Ctrl+K or / open command palette</li><li>Everything autosaves locally</li><li>To export use Export JSON</li></ul>'); }
+  el('#help-btn').addEventListener('click', showHelp);
+  function showModal(html){ el('#modal-content').innerHTML = html; el('#overlay').style.display = 'flex'; }
+  el('#close-modal').addEventListener('click', ()=> el('#overlay').style.display='none');
 
-  // modal helpers
-  function showModal(html){el('#modal-content').innerHTML = html; el('#overlay').style.display='flex'}
-  el('#close-modal').addEventListener('click',()=>el('#overlay').style.display='none');
-  // clickable thumbs open preview
-  function openPreviewModal(file,url){const info = `<div style="display:flex;gap:12px"><div style="flex:1"><img src="${url}" style="max-width:280px;border-radius:6px"/></div><div style="flex:2"><strong>${file.name}</strong><div style="font-size:12px;color:var(--muted)">${file.type} — ${Math.round(file.size/1024)} KB</div><div style="margin-top:8px"><button class='btn' id='modal-download'>Download</button> <button class='btn' id='modal-insert'>Insert to editor</button></div></div></div>`; showModal(info); setTimeout(()=>{el('#modal-download').addEventListener('click',()=>{const a=document.createElement('a');a.href=url;a.download=file.name;a.click()}); el('#modal-insert').addEventListener('click',()=>{el('#md-input').value += `\n![](${url})\n`; el('#md-input').dispatchEvent(new Event('input')); el('#overlay').style.display='none'} )},100)}
+  // preview modal for thumbs
+  function openPreviewModal(file, url){ const info = `<div style="display:flex;gap:12px"><div style="flex:1"><img src="${url}" style="max-width:320px;border-radius:8px"/></div><div style="flex:2"><strong>${file.name}</strong><div class="tiny muted">${file.type} — ${Math.round(file.size/1024)} KB</div><div style="margin-top:8px"><button class='btn' id='modal-download'>Download</button> <button class='btn secondary' id='modal-insert'>Insert to editor</button></div></div></div>`; showModal(info); setTimeout(()=>{ el('#modal-download').addEventListener('click', ()=>{ const a=document.createElement('a'); a.href=url; a.download=file.name; a.click(); }); el('#modal-insert').addEventListener('click', ()=>{ el('#md-input').value += `
+![](${url})
+`; el('#md-input').dispatchEvent(new Event('input')); el('#overlay').style.display='none'; scheduleSave(); }); },120); }
 
-  // attempt to recover saved manifest
-  (function recover(){try{const f=JSON.parse(localStorage.getItem('localtool.files')||'[]'); if(f.length){state.files = f; el('#file-list').textContent = f.map(x=>x.name).join('\n'); el('#stat-count').textContent = state.files.length;}}catch(e){console.warn(e)}})();
+  // recover saved manifest if present
+  (function recover(){ try{ const f = safeJSONParse(localStorage.getItem('localtool.files')||'[]', []); if(f && f.length){ state.files = f; el('#file-list').textContent = f.map(x=>x.name).join('\n'); el('#stat-count').textContent = state.files.length; } }catch(e){ console.warn(e); } })();
 
-  // accessible focus for drop
-  drop.addEventListener('keydown',e=>{if(e.key==='Enter') el('#file-input').click();});
+  // accessibility focus for drop
+  drop.addEventListener('keydown', e=>{ if(e.key==='Enter') el('#file-input').click(); });
 
   // search files
-  el('#btn-search').addEventListener('click',()=>{const q=el('#search-files').value.toLowerCase();const res = state.files.filter(f=>f.name.toLowerCase().includes(q));el('#file-list').textContent = res.map(x=>x.name).join('\n')});
+  el('#btn-search').addEventListener('click', ()=>{ const q = el('#search-files').value.toLowerCase(); const res = state.files.filter(f=>f.name.toLowerCase().includes(q)); el('#file-list').textContent = res.map(x=>x.name).join('\n'); });
+  el('#search-files').addEventListener('keydown', e=>{ if(e.key==='Enter') el('#btn-search').click(); });
 
-  // download all files (zips are complex without libs; just trigger sequential downloads)
-  el('#download-all').addEventListener('click',()=>{state.files.forEach(f=>{const a=document.createElement('a');a.href=f.url;a.download=f.name;a.click()});pushLog('downloaded all (one by one)')});
+  // download all (sequential triggers)
+  el('#download-all').addEventListener('click', ()=>{ state.files.forEach(f=>{ const a=document.createElement('a'); a.href=f.dataUrl||f.url; a.download=f.name; a.click(); }); pushLog('downloaded all (one by one)'); scheduleSave(); });
 
-  // file generation sample
-  function generateSampleFiles(){ // create a few sample files programmatically
-    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="100%" height="100%" fill="#081018"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="36" fill="#6ee7b7">Sample '+new Date().toLocaleString()+'</text></svg>';
-    const blob = new Blob([svg],{type:'image/svg+xml'}); const url = URL.createObjectURL(blob); const f = {name:'sample-'+Date.now()+'.svg',type:'image/svg+xml',size:blob.size,url}; state.files.push(f); state.images.push({file:{name:f.name,type:f.type,size:f.size},url}); appendThumb({name:f.name},url); updateStats(); pushLog('generated sample svg');}
+  // sample file generation
+  function generateSampleFiles(){ const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="100%" height="100%" fill="#04121a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="28" fill="#5ee7c6">Sample '+new Date().toLocaleString()+'</text></svg>'; const blob = new Blob([svg],{type:'image/svg+xml'}); const url = URL.createObjectURL(blob); const f = {name:'sample-'+Date.now()+'.svg',type:'image/svg+xml',size:blob.size,url}; state.files.push(f); state.images.push({file:{name:f.name,type:f.type,size:f.size},url}); appendThumb({name:f.name},url); updateStats(); pushLog('generated sample svg'); scheduleSave(); }
 
-  // palette color apply
-  el('#apply-color').addEventListener('click',()=>{const val = el('#color-swatch').value.trim(); if(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val)){document.documentElement.style.setProperty('--accent',val);pushLog('accent set to '+val)} else {pushLog('invalid color') }});
+  // apply accent color
+  el('#apply-color') && el('#apply-color').addEventListener('click', ()=>{ const val = el('#color-swatch').value.trim(); if(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val)){ document.documentElement.style.setProperty('--accent', val); flashStatus('Accent updated'); scheduleSave(); } else { flashStatus('Invalid color'); } });
 
-  // presets in right panel
-  els('[data-preset]').forEach(b=>b.addEventListener('click',e=>applyPreset(e.target.dataset.preset)));
+  // presets
+  els('[data-preset]').forEach(b=>b.addEventListener('click', e=>{ applyPreset(e.target.dataset.preset); scheduleSave(); }));
 
-  // small UI controls
-  el('#font-size').addEventListener('input',e=>{state.settings.fontSize = Number(e.target.value); document.querySelectorAll('.editor').forEach(t=>t.style.fontSize = state.settings.fontSize+'px'); localStorage.setItem('localtool.settings',JSON.stringify(state.settings));});
+  // editor font size change
+  el('#font-size').addEventListener('input', e=>{ state.settings.fontSize = Number(e.target.value); document.querySelectorAll('.editor').forEach(t=>t.style.fontSize = state.settings.fontSize+'px'); localStorage.setItem('localtool.settings', JSON.stringify(state.settings)); scheduleSave(); });
 
-  // keyboard accessibility: close overlays with Escape
-  window.addEventListener('keydown',e=>{if(e.key==='Escape'){el('#overlay').style.display='none';closePalette()}});
+  // remove thumbs by shift+click
+  el('#thumbs').addEventListener('click', e=>{ if(e.target.classList.contains('thumb') && e.shiftKey){ const name = e.target.dataset.name; state.files = state.files.filter(f=>f.name!==name); state.images = state.images.filter(i=>i.file.name!==name); e.target.remove(); updateStats(); pushLog('removed '+name); scheduleSave(); } });
 
-  // help and initial sample
-  (async function initSample(){const sample = 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#08101a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="48" fill="#6ee7b7">Local Toolkit — Extended</text></svg>');state.files.push({name:'sample.svg',type:'image/svg+xml',size:1024,url:sample});appendThumb({name:'sample.svg'},sample);updateStats();})();
+  // initial sample thumbnail + status
+  (function initSample(){ const sample = 'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#08101a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="48" fill="#5ee7c6">Local Toolkit — Polished</text></svg>'); if(!state.files.length){ state.files.push({name:'sample.svg',type:'image/svg+xml',size:1024,url:sample,dataUrl:sample}); appendThumb({name:'sample.svg'}, sample); updateStats(); scheduleSave(1800); } })();
 
-  // small accessibility/UX helpers
-  el('#search-files').addEventListener('keydown',e=>{if(e.key==='Enter') el('#btn-search').click()});
+  // helper generateUID
+  function generateUID(){ return 'id-'+Math.random().toString(36).slice(2,10)+'-'+Date.now().toString(36); }
 
-  // Save thumbnails click to remove (shift+click)
-  el('#thumbs').addEventListener('click',e=>{if(e.target.classList.contains('thumb') && e.shiftKey){const name=e.target.dataset.name; state.files = state.files.filter(f=>f.name!==name); state.images = state.images.filter(i=>i.file.name!==name); e.target.remove(); updateStats(); pushLog('removed '+name)}});
-
-  // make sure initial view is shown and fonts applied
-  showView('dashboard'); document.querySelectorAll('.editor').forEach(t=>t.style.fontSize = state.settings.fontSize+'px');
+  // final UI tweaks
+  document.querySelectorAll('.editor').forEach(t=>t.style.fontSize = state.settings.fontSize+'px');
+  // ensure autosave is on by default for this polished edition
+  el('#autosave').checked = true;
 
   </script>
 </body>
